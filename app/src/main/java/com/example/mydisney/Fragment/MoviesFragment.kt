@@ -1,49 +1,62 @@
 package com.example.mydisney.Fragment
 
+import android.graphics.drawable.ClipDrawable.HORIZONTAL
+import android.net.Network
 import android.os.Bundle
+import android.os.Handler
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.mydisney.Adapter.MovieFragmentComingSoonAdapter
+import com.example.mydisney.Api.EndPoints
+import com.example.mydisney.Model.ComingSoonDTO
+import com.example.mydisney.Model.ResponseDTO
+import com.example.mydisney.Network.Network.Retrofit
 import com.example.mydisney.R
-
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
+import retrofit2.Call
+import retrofit2.Response
 
 
-class MoviesFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+class MoviesFragment : Fragment(R.layout.fragment_movies) {
+  var comMovieFragmentList = listOf<ComingSoonDTO>()
+   private var movieRecyclerView : RecyclerView? = null
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_movies, container, false)
-    }
 
-    companion object {
+  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    super.onViewCreated(view, savedInstanceState)
+    ApiCall()
+  }
 
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            MoviesFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
-    }
+  private fun ApiCall(){
+    val endPoints: EndPoints = Network.Retrofit().create(EndPoints::class.java)
+         endPoints.getMovies().enqueue(object : retrofit2.Callback<ResponseDTO>{
+           override fun onResponse(call: Call<ResponseDTO>, response: Response<ResponseDTO>) {
+             comMovieFragmentList = response.body()?.comingSoon as List<ComingSoonDTO>
+             setRecyclerView()
+           }
+
+           override fun onFailure(call: Call<ResponseDTO>, t: Throwable) {
+           }
+
+
+
+
+  })
+  }
+
+  private fun setRecyclerView() {
+    val movieFragmentComingSoonAdapter = MovieFragmentComingSoonAdapter(comMovieFragmentList)
+    val linearLayoutManager = LinearLayoutManager(context,LinearLayoutManager.HORIZONTAL,false)
+    movieRecyclerView!!.adapter = movieFragmentComingSoonAdapter
+    movieRecyclerView!!.layoutManager = linearLayoutManager
+  }
+
+
 }
+
+
+

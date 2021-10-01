@@ -16,7 +16,6 @@ class MainActivity : AppCompatActivity() {
     lateinit var dwlayout : DrawerLayout
     lateinit var ivmenu : ImageView
     lateinit var drawernav: NavigationView
-
     lateinit var toolbar : androidx.appcompat.widget.Toolbar
 
     var bottomNavigationView: BottomNavigationView? = null
@@ -52,7 +51,6 @@ class MainActivity : AppCompatActivity() {
 
         togglee.syncState()
 
-        //dwlayout.openDrawer(drawernav)
 
         ivmenu.setOnClickListener {
 
