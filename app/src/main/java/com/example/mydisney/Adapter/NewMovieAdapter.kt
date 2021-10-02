@@ -23,7 +23,8 @@ import java.util.ArrayList;
     }
 
     override fun onBindViewHolder(holder: NewMovieViewHolder, position: Int) {
-        holder.setData(NowShowingDTO())
+        val nowShowingDTO: NowShowingDTO = list[position]
+        holder.setData(nowShowingDTO)
     }
 
     override fun getItemCount(): Int {

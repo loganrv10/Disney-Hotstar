@@ -14,18 +14,31 @@
         android:layout_centerInParent="true"
         android:id="@+id/progress"/>
 
+
+
     <androidx.viewpager2.widget.ViewPager2
         android:layout_width="match_parent"
         android:layout_height="210dp"
         android:id="@+id/comingSoonVP"
         />
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Disney Movies"
+            android:layout_below="@+id/comingSoonVP"
+            android:textStyle="bold"
+            android:textColor="@color/black"
+            android:textSize="35dp"/>
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recylerView"
+            android:layout_marginTop="45dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/comingSoonVP"
            />
+
 
     </RelativeLayout>
 </ScrollView>

@@ -8,12 +8,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.example.mydisney.Adapter.ComingSoonAdapter
 import com.example.mydisney.Adapter.NewMovieAdapter
-import com.example.mydisney.Model.ComingSoonDTO
 import com.example.mydisney.Model.NowShowingDTO
 import com.example.mydisney.Network.Network
 import com.example.mydisney.R
@@ -23,8 +23,7 @@ import retrofit2.Response
 import com.example.mydisney.Model.ResponseDTO
 
 import com.example.mydisney.Api.EndPoints
-
-
+import com.example.mydisney.Model.ComingSoonDTO
 
 
 class HomeFragment : Fragment(R.layout.fragment_home){
@@ -47,23 +46,41 @@ class HomeFragment : Fragment(R.layout.fragment_home){
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initView(view)
-        setUpRecyclerView()
+
         makeNetworkCall()
+        makeNetworkCall2()
 
     }
+
+    private fun makeNetworkCall2() {
+        val endPoints: EndPoints = Network.Retrofit().create(EndPoints::class.java)
+        endPoints.getMovies().enqueue(object : retrofit2.Callback<ResponseDTO>{
+            override fun onResponse(call: Call<ResponseDTO>, response: Response<ResponseDTO>) {
+                NowShowing =(response.body()?.nowShowing as List<NowShowingDTO>)
+                setUpRecyclerView()
+            }
+
+            override fun onFailure(call: Call<ResponseDTO>, t: Throwable) {
+
+            }
+
+        })
+    }
+
+
 
     private fun makeNetworkCall() {
         val endPoints: EndPoints = Network.Retrofit().create(EndPoints::class.java)
         endPoints.getMovies().enqueue(object : retrofit2.Callback<ResponseDTO> {
-            @SuppressLint("NotifyDataSetChanged")
             override fun onResponse(call: Call<ResponseDTO>, response: Response<ResponseDTO>) {
-                NowShowing =(response.body()?.nowShowing as List<NowShowingDTO>)
-                newMovieAdapter!!.notifyDataSetChanged()
+
+
                 comingSoon =(response.body()?.comingSoon as List<ComingSoonDTO>)
                 viewPager2!!.adapter = ComingSoonAdapter(
                     comingSoon
                 )
                 progress!!.visibility = View.GONE
+
             }
             override fun onFailure(call: Call<ResponseDTO>, t: Throwable) {
 
@@ -75,12 +92,15 @@ class HomeFragment : Fragment(R.layout.fragment_home){
 
     }
 
+
+
     private fun setUpRecyclerView() {
         newMovieAdapter = NewMovieAdapter(NowShowing)
-        val linearLayoutManager = LinearLayoutManager(context,LinearLayoutManager.HORIZONTAL,false)
+        val gridLayoutManager = GridLayoutManager(context,2)
         recyclerView!!.adapter = newMovieAdapter
-        recyclerView!!.layoutManager = linearLayoutManager
+        recyclerView!!.layoutManager = gridLayoutManager
     }
+
 
     private fun initView(view: View) {
         recyclerView = view.findViewById(R.id.recylerView)
